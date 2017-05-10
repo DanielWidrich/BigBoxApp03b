@@ -68,7 +68,6 @@ public class Store_SalesDB implements Store_SalesDAO {
 		return divSalesTotal;
 	}
 
-	
 	@Override
 	public double storeSalesAnnual(int storeId, int year) 
 	{
@@ -96,7 +95,25 @@ public class Store_SalesDB implements Store_SalesDAO {
 		}		
 		return salesTotal;
 	}
-		
+	
+	@Override
+	public int delStoreSales(int storeId)
+	{
+		int count = 0;
+		String delStoreSalesSQL = "DELETE FROM store_sales WHERE" 				
+				+ " " + "StoreID = ?";					
+		try (Connection connection = DBUtil.getConnection();
+				PreparedStatement ps = connection.prepareStatement(delStoreSalesSQL))
+		{
+			ps.setInt(1, storeId);
+			count = ps.executeUpdate();
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();				
+		}
+		return count;
+	}
 }
 
 

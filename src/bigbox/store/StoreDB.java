@@ -110,17 +110,18 @@ public class StoreDB implements StoreDAO {
 	}
 
 	@Override
-	public boolean deleteStore(int divIn, String storeIn) {
+	public boolean deleteStore(int divIdIn, int storeIdIn) 
+	{
 		int count;
 		String deleteSQL = "DELETE FROM stores WHERE" 				
 				+ " " + "DivisionID = ?"
-				+ " " + "and StoreNumber = ?";
+				+ " " + "and ID = ?";
 		System.out.println("delete sql = "+deleteSQL);
 		try(Connection connection = DBUtil.getConnection();
 				PreparedStatement ps = connection.prepareStatement(deleteSQL))
 		{
-			ps.setInt(1, divIn);
-			ps.setString(2, storeIn);
+			ps.setInt(1, divIdIn);
+			ps.setInt(2, storeIdIn);
 			count = ps.executeUpdate();
 		}
 		catch(SQLException e)

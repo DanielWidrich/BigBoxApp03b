@@ -255,18 +255,55 @@ public class BigBoxApp {
 
 	private static void del()
 	{
-		String delDivNum = Validator.getStringNumeric(sc, "Please enter the 3-digit Division number in which this store operates: ", 3);
-		int divID = divisionDAO.getDivisionID(delDivNum);
-		String delStoreNum = Validator.getStringNumeric(sc, "Please enter the 5-digit Store number: ", 5);
-		boolean delStore = storeDAO.deleteStore(divID, delStoreNum);
+		boolean validStore = false;
+		boolean validDiv = false;
+		
+		String delDivNum = "";
+		String delStoreNum = "";
+		int divId = -1;
+		int storeID = -1;
+		int salesRecords = -1;
+		// validate division number
+		while(!validDiv)
+		{
+			delDivNum = Validator.getStringNumeric(sc, "Please enter the 3-digit Division number in which this store operates: ", 3);
+			divId = divisionDAO.getDivisionID(delDivNum);
+			if(divId > 0)
+			{
+				validDiv = true;
+			}
+			else
+			{
+				System.out.println("Error!  Division number " + delDivNum + " was not found in database.\n");
+			}
+		}		
+		// validate store number in division
+		while(!validStore)
+		{
+			delStoreNum = Validator.getStringNumeric(sc, "Please enter the 5-digit Store number: ", 5);
+			storeID = storeDAO.getStoreId(delStoreNum, divId);
+			if(storeID > 0)
+			{
+				validStore = true;
+			}
+			else
+			{
+				System.out.println("Error!--Store number " + delStoreNum + " in Division "+delDivNum+" was not found in database.\n");
+			}
+		}		
+		// delete store		
+		boolean delStore = storeDAO.deleteStore(divId, storeID);
 		if(!delStore)
 		{
 			System.out.println("Store not deleted");
 		}
 		else
 		{
+			// delete store_sales records associated with storeId
+			salesRecords = store_salesDAO.delStoreSales(storeID);
 			System.out.println("Store " + delStoreNum + " in Divison " + delDivNum + " has been deleted."); 
-		}
+			System.out.println(salesRecords + " sales records have been deleted in association with this store."); 
+		}		
 	}
 
 	private static String exit()
